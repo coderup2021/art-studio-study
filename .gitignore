@@ -6,7 +6,6 @@
 .pnp.js
 
 # testing
-/coverage
 
 # next.js
 /.next/
@@ -34,3 +33,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+coverage
+coverage.json
+typechain
+typechain-types
+
+# Hardhat files
+cache
+artifacts
+
