@@ -24,6 +24,8 @@ specifiers:
   hardhat: ^2.11.0
   hardhat-gas-reporter: ^1.0.8
   next: 13.1.1
+  prettier: ^2.8.1
+  prettier-plugin-solidity: ^1.1.1
   react: 18.2.0
   react-dom: 18.2.0
   solidity-coverage: ^0.8.1
@@ -59,6 +61,8 @@ devDependencies:
   ethers: 5.7.2
   hardhat: 2.12.4_z6wznmtyb6ovnulj6iujpct7um
   hardhat-gas-reporter: 1.0.9_hardhat@2.12.4
+  prettier: 2.8.1
+  prettier-plugin-solidity: 1.1.1_prettier@2.8.1
   solidity-coverage: 0.8.2_hardhat@2.12.4
   ts-node: 10.9.1_awa2wsr5thmg3i7jqycphctjfq
   typechain: 8.1.1_typescript@4.9.4
@@ -4562,6 +4566,18 @@ packages:
     engines: {node: '>= 0.8.0'}
     dev: false
 
+  /prettier-plugin-solidity/1.1.1_prettier@2.8.1:
+    resolution: {integrity: sha512-uD24KO26tAHF+zMN2nt1OUzfknzza5AgxjogQQrMLZc7j8xiQrDoNWNeOlfFC0YLTwo12CLD10b9niLyP6AqXg==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      prettier: '>=2.3.0 || >=3.0.0-alpha.0'
+    dependencies:
+      '@solidity-parser/parser': 0.14.5
+      prettier: 2.8.1
+      semver: 7.3.8
+      solidity-comments-extractor: 0.0.7
+    dev: true
+
   /prettier/2.8.1:
     resolution: {integrity: sha512-lqGoSJBQNJidqCHE80vqZJHWHRFoNYsSpP9AjFhlhi9ODCJA541svILes/+/1GM3VaL/abZi7cpFzOpdR9UPKg==}
     engines: {node: '>=10.13.0'}
@@ -5058,6 +5074,10 @@ packages:
       tmp: 0.0.33
     transitivePeerDependencies:
       - debug
+    dev: true
+
+  /solidity-comments-extractor/0.0.7:
+    resolution: {integrity: sha512-wciNMLg/Irp8OKGrh3S2tfvZiZ0NEyILfcRCXCD4mp7SgK/i9gzLfhY2hY7VMCQJ3kH9UB9BzNdibIVMchzyYw==}
     dev: true
 
   /solidity-coverage/0.8.2_hardhat@2.12.4:
