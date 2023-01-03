@@ -10,6 +10,7 @@ specifiers:
   '@nomicfoundation/hardhat-toolbox': ^2.0.0
   '@nomiclabs/hardhat-ethers': ^2.0.0
   '@nomiclabs/hardhat-etherscan': ^3.0.0
+  '@openzeppelin/contracts': ^4.8.0
   '@typechain/ethers-v5': ^10.1.0
   '@typechain/hardhat': ^6.1.2
   '@types/chai': ^4.2.0
@@ -36,6 +37,7 @@ specifiers:
 dependencies:
   '@ethersproject/bytes': 5.7.0
   '@next/font': 13.1.1
+  '@openzeppelin/contracts': 4.8.0
   '@types/node': 18.11.18
   '@types/react': 18.0.26
   '@types/react-dom': 18.0.10
@@ -981,6 +983,10 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /@openzeppelin/contracts/4.8.0:
+    resolution: {integrity: sha512-AGuwhRRL+NaKx73WKRNzeCxOCOCxpaqF+kp8TJ89QzAipSwZy/NoflkWaL9bywXFRhIzXt8j38sfF7KBKCPWLw==}
+    dev: false
 
   /@pkgr/utils/2.3.1:
     resolution: {integrity: sha512-wfzX8kc1PMyUILA+1Z/EqoE4UCXGy0iRGMhPwdfae1+f0OXlLqCk+By+aMzgJBzR9AzS4CDizioG6Ss1gvAFJw==}
