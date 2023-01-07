@@ -5,7 +5,6 @@ import React, { useState } from "react";
 import dayjs from "dayjs";
 import "dayjs/locale/zh-cn";
 import "antd/dist/reset.css";
-import Layout from "./layout";
 dayjs.locale("zh-cn");
 
 export default function App({ Component, pageProps }: AppProps) {
