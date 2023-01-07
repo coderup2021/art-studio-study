@@ -32,7 +32,7 @@ describe("MyERC721", function () {
       const tokenUrl = await token.tokenURI(0);
       expect(tokenUrl).to.equal(url);
       const balanceOf = await token.balanceOf(tokenOwner);
-      expect(balanceOf).to.equal(1);
+      expect(balanceOf.toNumber()).to.equal(1);
     });
     it("mint list", async function () {
       const { token, owner, otherAccount } = await loadFixture(deployMyERC721);

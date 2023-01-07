@@ -1,13 +1,12 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.1;
 
-// Uncomment this line to use console.log
-// import "hardhat/console.sol";
 
 contract Lock {
     uint public unlockTime;
     address payable public owner;
-
+    uint public number;
+    event NumberSet(uint oldValue, uint newValue);
     event Withdrawal(uint amount, uint when);
 
     constructor(uint _unlockTime) payable {
@@ -18,6 +17,11 @@ contract Lock {
 
         unlockTime = _unlockTime;
         owner = payable(msg.sender);
+    }
+
+    function setNumber(uint _number) public {
+        emit NumberSet(number, _number);
+        number = _number;
     }
 
     function withdraw() public {
