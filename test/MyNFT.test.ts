@@ -22,7 +22,7 @@ describe("MyNFT", function () {
     it("mint", async function () {
       const { token, owner, otherAccount } = await loadFixture(deployMyNFT);
       const url = "http://com.byq/image/1.png";
-      const mintFee = 1000000000;
+      const mintFee = (10 * 10 ** 15).toString();
       const tokenId = await token.mint(otherAccount[0].address, url, {
         value: mintFee,
       });
@@ -42,33 +42,35 @@ describe("MyNFT", function () {
       ).to.be.revertedWith("not owner");
     });
 
-    it("测试提款", async function () {
+    it("提款后的金额应该是OK的", async function () {
       const { token, owner, otherAccount } = await loadFixture(deployMyNFT);
       const url = "http://com.byq/image/1.png";
-      const mintFee = 1000000000;
+      const mintFee = "100000000000000";
       await token.mint(otherAccount[0].address, url, {
         value: mintFee,
       });
-      await token.mint(otherAccount[0].address, url, {
-        value: mintFee,
-      });
-      await token.mint(otherAccount[0].address, url, {
-        value: mintFee,
-      });
-      await token.mint(otherAccount[0].address, url, {
-        value: mintFee,
-      });
-      let signerBalance = await owner.getBalance();
-      console.log("signerBalance1", signerBalance.toString());
+
+      //原金额
+      let signerBalance1 = await owner.getBalance();
+      console.log("原金额:", signerBalance1.toString());
+
+      //提款金额
       const balance = await token.connect(owner).getBalance();
-      expect(balance.toNumber()).to.equal(mintFee * 4);
-      console.log("transfer", balance.toString());
-      const res = await token.connect(owner).withdraw();
-      console.log("gas11111", res.gasPrice?.toString());
+      expect(balance.toString()).to.equal(mintFee);
+      console.log("提款金额:", balance.toString());
+      const transaction = await token.connect(owner).withdraw();
+      const ts = await transaction.wait();
+
+      //使用的gas费用
+      const gasUsed = ts.cumulativeGasUsed.mul(ts.effectiveGasPrice);
+      console.log("使用的gas费用:", gasUsed.toString());
       expect((await token.getBalance()).toNumber()).to.equal(0);
-      signerBalance = await owner.getBalance();
-      console.log("signerBalance2", signerBalance.toString());
-      console.log("此处还有问题，提款后 账户金额还变少了");
+
+      //提款后的金额
+      const signerBalance2 = await owner.getBalance();
+      console.log("提款后的金额:", signerBalance2.toString());
+
+      expect(signerBalance1.add(balance).sub(gasUsed)).to.equal(signerBalance2);
     });
 
     it("mint should emit event Mint", async function () {
