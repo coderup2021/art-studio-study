@@ -18,8 +18,8 @@ const items: MenuProps["items"] = [
     key: "my-assets",
   },
   {
-    label: <Link href="/dashboard">dashboard</Link>,
-    key: "dashboard",
+    label: <Link href="/mint">铸币</Link>,
+    key: "mint",
   },
 ];
 
