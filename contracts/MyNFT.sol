@@ -12,7 +12,7 @@ contract MyNFT is ERC721URIStorage {
     address public withdrawer;
     uint fee = 1 gwei;
     event WithdrawFee(uint fee);
-    event Mint(address to, string url);
+    event Mint(address to, string url, uint tokenId);
 
     // Optional mapping for token URIs
     mapping(uint256 => string) private _tokenURIs;
@@ -32,9 +32,9 @@ contract MyNFT is ERC721URIStorage {
     }
     function mint(address to, string memory tokenURI) public payable returns (uint256) {
         require(msg.value >= fee, "not equal fee");
-        emit Mint(to, tokenURI);
         uint newItemId = _tokenIds.current();
         _mint(to, newItemId);
+        emit Mint(to, tokenURI, newItemId);
         _setTokenURI(newItemId, tokenURI);
         _tokenIds.increment();
         return newItemId;

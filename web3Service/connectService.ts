@@ -1,13 +1,14 @@
 import { ethers, Signer } from "ethers";
 import { NetworkConfiguration } from "./config";
 import { message } from "antd";
-import { Network } from "@ethersproject/providers";
+import { Network, Provider } from "@ethersproject/providers";
 
 interface ConnectRes {
   success: boolean;
   network?: Network;
   signer?: Signer;
   address?: string;
+  provider?: Provider;
 }
 const _connect = async () => {
   const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -16,17 +17,24 @@ const _connect = async () => {
     const signer = provider.getSigner();
     const network = await provider.getNetwork();
     const address = await signer.getAddress();
-    return { signer, network, address };
+    return { signer, network, address, provider };
   } catch (error) {
     throw error;
   }
 };
 
 const trying = async () => {
-  const { signer, network, address } = await _connect();
+  const { signer, network, address, provider } = await _connect();
   const isSupported = NetworkConfiguration.chainId === network.chainId;
   if (isSupported) {
-    return { success: true, signer, address, network };
+    return {
+      success: true,
+      signer,
+      address,
+      network,
+      chainId: network.chainId,
+      provider,
+    };
   } else {
     return { success: false };
   }
@@ -34,7 +42,7 @@ const trying = async () => {
 
 type Connect = () => Promise<ConnectRes>;
 
-export const connect: Connect = async () => {
+export const connectWallet: Connect = async () => {
   const { success, ...rest } = await trying();
   if (success) {
     return { success, ...rest };
