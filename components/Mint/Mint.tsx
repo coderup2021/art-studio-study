@@ -6,6 +6,7 @@ import { FormInstance, useForm } from "antd/es/form/Form";
 import { Filelike, Web3Storage } from "web3.storage";
 import { connectWallet } from "../../web3Service/connectService";
 import { mintNFT } from "../../web3Service/nftService";
+import { getIpfsURL } from "../../web3Service/config";
 const API_TOKEN =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweEE0NzA2YzlDMTYwMDI5MGZhNDQ3NjJkZjJCM0E3MTBjZWQxYTYxRDUiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2NzM0NDI0OTc1NTEsIm5hbWUiOiJ0MSJ9.0KBqihEFS5akr5RdcD7qZt6Rfao9QJNr4YnlNEw3Q0w";
 
@@ -71,9 +72,8 @@ const Mint = () => {
   };
   const uploadToIPFS = async (content: any) => {
     const client = createClient({ url: "http://localhost:5001" });
-    const fileBuf = await fileToBuffer(fileList[0]);
-    if (!fileBuf) throw new Error("file buffer generated fail");
-    const { path } = await client.add(fileBuf);
+    if (!content) throw new Error("can not upload empty item to ipfs");
+    const { path } = await client.add(content);
     if (!path) {
       throw new Error("can not upload image to ipfs");
     }
@@ -89,7 +89,7 @@ const Mint = () => {
         const data = {
           name,
           description,
-          imgURI: `http://127.0.0.1:8080/ipfs/${imgCID}`,
+          imgURI: getIpfsURL(imgCID),
         };
         const tokenURI = await uploadToIPFS(JSON.stringify(data));
         console.log("tokenURI", tokenURI);

@@ -14,7 +14,7 @@ const items: MenuProps["items"] = [
     key: "create-item",
   },
   {
-    label: <Link href={"/my-asseets"}>My Assets</Link>,
+    label: <Link href={"/nftlist"}>My Assets</Link>,
     key: "my-assets",
   },
   {

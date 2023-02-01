@@ -1,4 +1,5 @@
 const chainId = 31337;
+
 export const NetworkConfiguration = {
   chainId,
   nftAddress: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
@@ -19,4 +20,16 @@ export const NetworkConfiguration = {
 };
 export const rpcUrl = () => {
   return NetworkConfiguration.params[0].rpcUrls[0];
+};
+
+export const ipfsConfig = {
+  protocol: "http",
+  ip: "localhost",
+  port: 8080,
+  path: "ipfs",
+};
+
+export const getIpfsURL = (cid: string) => {
+  const { protocol, ip, port, path } = ipfsConfig;
+  return `${protocol}://${ip}:${port}/${path}/${cid}`;
 };
