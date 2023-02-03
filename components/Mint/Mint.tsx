@@ -1,19 +1,28 @@
-import { Button, Form, Input, message, Upload, UploadProps } from "antd";
-import React, { useCallback, useState } from "react";
+import {
+  Button,
+  Form,
+  Input,
+  message,
+  Upload,
+  UploadFile,
+  UploadProps,
+} from "antd";
+import React, { FC, useCallback, useState } from "react";
 import { create as createClient } from "ipfs-http-client";
-import axios from "axios";
-import { FormInstance, useForm } from "antd/es/form/Form";
-import { Filelike, Web3Storage } from "web3.storage";
-import { connectWallet } from "../../web3Service/connectService";
+import { connect } from "../../web3Service/connectService";
 import { mintNFT } from "../../web3Service/nftService";
-import { getIpfsURL } from "../../web3Service/config";
-const API_TOKEN =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweEE0NzA2YzlDMTYwMDI5MGZhNDQ3NjJkZjJCM0E3MTBjZWQxYTYxRDUiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2NzM0NDI0OTc1NTEsIm5hbWUiOiJ0MSJ9.0KBqihEFS5akr5RdcD7qZt6Rfao9QJNr4YnlNEw3Q0w";
+import { getArweaveURL, getIpfsURL } from "../../web3Service/config";
+import { uploadToArweave } from "../../web3Service/arweaveService";
+import { wrapStorageType } from "../../utils/index";
 
-const Mint = () => {
-  const [uploading, setUploading] = useState(false);
-  const [fileList, setFileList] = useState<File[]>([]);
+interface MintProps {
+  closeModal: () => void;
+  storageType: "ipfs" | "arweave";
+}
+const Mint: FC<MintProps> = ({ closeModal, storageType }) => {
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
   const fileToBuffer = (file: File): Promise<Buffer | null> => {
     return new Promise((resolve) => {
       if (!file) resolve(null);
@@ -25,50 +34,14 @@ const Mint = () => {
     });
   };
   const uploadProps: UploadProps = {
-    // async onChange({ file, fileList }) {
-    //   if (!fileList.length) {
-    //     return;
-    //   }
-    //   // Construct with token and endpoint
-    //   const client = new Web3Storage({ token: API_TOKEN });
-
-    //   // Pack files into a CAR and send to web3.storage
-    //   const rootCid = await client.put([
-    //     fileList[0].originFileObj,
-    //   ] as Iterable<Filelike>); // Promise<CIDString>
-
-    //   // Get info on the Filecoin deals that the CID is stored in
-    //   const info = await client.status(rootCid); // Promise<Status | undefined>
-
-    //   // Fetch and verify files from web3.storage
-    //   const res = await client.get(rootCid); // Promise<Web3Response | null>
-    //   console.log("res", res);
-    //   const files = await res!.files(); // Promise<Web3File[]>
-    //   const resFile = files[0];
-    //   console.log(`${resFile.cid} ${resFile.name} ${resFile.size}`);
-    //   const assetUrl = `https://w3s.link/ipfs/${resFile.cid}`;
-    //   form.setFieldsValue({ img: assetUrl });
-    // },
     async onChange({ file, fileList }) {
-      setFileList([fileList[0].originFileObj as File]);
+      setFileList(fileList);
+      form.setFieldValue("img", file.name);
     },
     beforeUpload() {
       return false;
     },
-    // showUploadList: false,
-  };
-  const connect = async () => {
-    if (!window.ethereum) {
-      message.error("请先安装MetaMask钱包!");
-      return;
-    }
-    try {
-      const { address, success } = await connectWallet();
-      if (success) return address;
-    } catch (error: any) {
-      //   message.error(`, ${error}`);
-      throw new Error("连接钱包失败:" + error.toString());
-    }
+    showUploadList: false,
   };
   const uploadToIPFS = async (content: any) => {
     const client = createClient({ url: "http://localhost:5001" });
@@ -79,28 +52,65 @@ const Mint = () => {
     }
     return path;
   };
+  const storeOnLine = useCallback(
+    async (
+      content: any,
+      tags?: { [props: string]: string } | null | undefined
+    ) => {
+      if (storageType === "ipfs") {
+        return (await uploadToIPFS(content)) as string;
+      } else if (storageType === "arweave") {
+        return await uploadToArweave(content, tags);
+      } else {
+        throw new Error("unknown storage type: " + storageType);
+      }
+    },
+    [storageType]
+  );
+
+  const resetForm = useCallback(() => {
+    form.resetFields();
+    setFileList([]);
+  }, [form]);
+
   const onFinish = useCallback(
     async (values: any) => {
       try {
         await connect();
-        const fileBuf = await fileToBuffer(fileList[0]);
-        const imgCID = await uploadToIPFS(fileBuf);
+        const fileBuf = await fileToBuffer(fileList[0].originFileObj as File);
+        const imgCID =
+          (await storeOnLine(fileBuf, {
+            "content-type": fileList[0].type || "",
+          })) || "";
         const { name, description } = values;
         const data = {
           name,
           description,
-          imgURI: getIpfsURL(imgCID),
+          storageType,
+          imgURI:
+            storageType === "ipfs" ? getIpfsURL(imgCID) : getArweaveURL(imgCID),
         };
-        const tokenURI = await uploadToIPFS(JSON.stringify(data));
-        console.log("tokenURI", tokenURI);
+        setLoading(true);
+        let tokenURI =
+          (await storeOnLine(JSON.stringify(data), {
+            "content-type": "html/text",
+          })) || "";
+
+        if (tokenURI) {
+          tokenURI = wrapStorageType(tokenURI, storageType);
+        }
         const tokenId = await mintNFT(tokenURI);
         message.success("铸币成功：" + tokenId);
+        closeModal();
+        resetForm();
       } catch (error: any) {
         console.log("error", error);
         message.error(error.toString());
+      } finally {
+        setLoading(false);
       }
     },
-    [fileList]
+    [fileList, closeModal]
   );
   return (
     <div className="mint-page">
@@ -120,13 +130,13 @@ const Mint = () => {
             readOnly
             addonBefore={
               <Upload {...uploadProps}>
-                <span>点击上传图片</span>
+                <span style={{ cursor: "pointer" }}>点击上传图片</span>
               </Upload>
             }
           />
         </Form.Item>
         <Form.Item>
-          <Button htmlType="submit" type="primary">
+          <Button htmlType="submit" type="primary" loading={loading}>
             提交
           </Button>
         </Form.Item>

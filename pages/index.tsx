@@ -72,7 +72,6 @@ export default function Home() {
     const transaction = await myNFT.withdraw();
     const ts = await transaction.wait();
     const [{ args }] = ts.events;
-    console.log("args", args);
     notification.success({
       message: "提款成功啦",
       description: `本地提款金额：${args.fee.toNumber()} wei`,

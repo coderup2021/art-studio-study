@@ -4,7 +4,7 @@ import { NFTList } from "../components/NFTList/NFTList";
 export default function nftlist() {
   return (
     <div className="layout">
-      <NFTList storageType="ipfs" />
+      <NFTList storageType={"arweave"} />
     </div>
   );
 }

@@ -14,12 +14,12 @@ const items: MenuProps["items"] = [
     key: "create-item",
   },
   {
-    label: <Link href={"/nftlist"}>My Assets</Link>,
-    key: "my-assets",
+    label: <Link href={"/nftlist"}>NFT IPFS</Link>,
+    key: "my-nft",
   },
   {
-    label: <Link href="/mint">铸币</Link>,
-    key: "mint",
+    label: <Link href="/arweave">NFT Arweave</Link>,
+    key: "arweave",
   },
 ];
 
@@ -27,7 +27,6 @@ const Layout: React.FC<PropsWithChildren<{}>> = ({ children }) => {
   const [current, setCurrent] = useState("mail");
 
   const onClick: MenuProps["onClick"] = (e) => {
-    console.log("click ", e);
     setCurrent(e.key);
   };
 

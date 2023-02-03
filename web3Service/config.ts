@@ -33,3 +33,14 @@ export const getIpfsURL = (cid: string) => {
   const { protocol, ip, port, path } = ipfsConfig;
   return `${protocol}://${ip}:${port}/${path}/${cid}`;
 };
+
+export const arweaveConfig = {
+  protocol: "http",
+  host: "127.0.0.1",
+  port: 1984,
+};
+
+export const getArweaveURL = (cid: string) => {
+  const { protocol, host, port } = arweaveConfig;
+  return `${protocol}://${host}:${port}/${cid}`;
+};

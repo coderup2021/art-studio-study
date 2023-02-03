@@ -1,12 +1,17 @@
 import React from "react";
-import ConnectWallet from "../components/connectWallet";
+import ConnectWallet from "../components/ConnectWallet";
 import IPfsTest from "../components/IPfsTest";
+import TestArweave from "../components/TestArweave";
+import { Space } from "antd";
 
 const HeaderRight = () => {
   return (
     <div className="right">
-      <IPfsTest />
-      <ConnectWallet />
+      <Space>
+        <IPfsTest />
+        <ConnectWallet />
+        <TestArweave />
+      </Space>
     </div>
   );
 };

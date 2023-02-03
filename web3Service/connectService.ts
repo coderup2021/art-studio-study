@@ -59,3 +59,17 @@ export const connectWallet: Connect = async () => {
     return { success: false };
   }
 };
+
+export const connect = async () => {
+  if (!window.ethereum) {
+    message.error("请先安装MetaMask钱包!");
+    return;
+  }
+  try {
+    const { address, success } = await connectWallet();
+    if (success) return address;
+  } catch (error: any) {
+    //   message.error(`, ${error}`);
+    throw new Error("连接钱包失败:" + error.toString());
+  }
+};
